@@ -18,6 +18,10 @@ product_constraints = {p["product_id"]: p for p in factory_data["product_constra
 def generate_production_schedule():
     production_schedule = []
     
+    # Create a dictionary to store production needs per day
+    daily_needs = {}
+    
+    # First, determine maximum daily production for each product
     for product in forecast_data["products"]:
         product_id = product["product_id"]
         total_units = product["total_units"]
@@ -25,30 +29,46 @@ def generate_production_schedule():
         end_date = datetime.strptime(product["season_end"], "%Y-%m-%d")
         
         days_available = (end_date - start_date).days
-        daily_target = total_units / days_available  # Evenly distribute across season
         max_daily_units = product_constraints[product_id]["max_units_per_day"]
         
         current_date = start_date
         while current_date <= end_date:
             date_str = current_date.strftime("%Y-%m-%d")
             
-            # Adjust for downtime
-            if date_str in downtime_schedule:
-                adjusted_capacity = factory_capacity * ((24 - downtime_schedule[date_str]) / 24)
-            else:
-                adjusted_capacity = factory_capacity
+            if date_str not in daily_needs:
+                daily_needs[date_str] = []
             
-            # Determine daily production
-            daily_production = min(daily_target, max_daily_units, adjusted_capacity)
-            
-            production_schedule.append({
-                "date": date_str,
+            daily_needs[date_str].append({
                 "product_id": product_id,
                 "product_name": product["product_name"],
-                "scheduled_units": round(daily_production)
+                "max_units": max_daily_units,
+                "priority": product_constraints[product_id]["priority_level"]
             })
             
             current_date += timedelta(days=1)
+    
+    # Allocate daily production based on priority when multiple products overlap
+    for date, products in daily_needs.items():
+        # Adjust factory capacity for downtime
+        if date in downtime_schedule:
+            adjusted_capacity = factory_capacity * ((24 - downtime_schedule[date]) / 24)
+        else:
+            adjusted_capacity = factory_capacity
+        
+        # Sort products by priority (lower number = higher priority)
+        products.sort(key=lambda x: x["priority"])
+        
+        remaining_capacity = adjusted_capacity
+        for product in products:
+            daily_production = min(product["max_units"], remaining_capacity)
+            remaining_capacity -= daily_production
+            
+            production_schedule.append({
+                "date": date,
+                "product_id": product["product_id"],
+                "product_name": product["product_name"],
+                "scheduled_units": round(daily_production)
+            })
     
     return production_schedule
 
