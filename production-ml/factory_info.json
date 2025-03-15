@@ -1,0 +1,35 @@
+{
+    "factory_id": 101,
+    "factory_name": "California Processing Plant",
+    "max_daily_capacity": 20000,
+    "machine_efficiency": 0.9,
+    "available_shifts_per_day": 2,
+    "hours_per_shift": 8,
+    "downtime_schedule": [
+      {"date": "2025-07-15", "reason": "Maintenance", "expected_downtime_hours": 4},
+      {"date": "2025-09-10", "reason": "Line Cleaning", "expected_downtime_hours": 6}
+    ],
+    "product_constraints": [
+      {
+        "product_id": 1,
+        "max_units_per_day": 12000,
+        "priority_level": 2
+      },
+      {
+        "product_id": 2,
+        "max_units_per_day": 10000,
+        "priority_level": 3
+      },
+      {
+        "product_id": 3,
+        "max_units_per_day": 18000,
+        "priority_level": 1
+      },
+      {
+        "product_id": 4,
+        "max_units_per_day": 9000,
+        "priority_level": 4
+      }
+    ]
+  }
+  
