@@ -1,0 +1,34 @@
+{
+    "year": 2025,
+    "products": [
+      {
+        "product_id": 1,
+        "product_name": "Canned Peaches",
+        "total_units": 500000,
+        "season_start": "2025-06-01",
+        "season_end": "2025-10-01"
+      },
+      {
+        "product_id": 2,
+        "product_name": "Canned Pears",
+        "total_units": 400000,
+        "season_start": "2025-07-01",
+        "season_end": "2025-11-01"
+      },
+      {
+        "product_id": 3,
+        "product_name": "Tomato Paste",
+        "total_units": 600000,
+        "season_start": "2025-08-01",
+        "season_end": "2025-12-01"
+      },
+      {
+        "product_id": 4,
+        "product_name": "Fruit Cocktail",
+        "total_units": 300000,
+        "season_start": "2025-09-01",
+        "season_end": "2025-12-15"
+      }
+    ]
+  }
+  
