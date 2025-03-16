@@ -1,0 +1,6 @@
+production-app/node_modules
+production-app/.next
+production-app/dist
+production-app/build
+production-app/coverage
+production-app/public/uploads
