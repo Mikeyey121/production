@@ -39,7 +39,7 @@ export default async function FactoryInfoData() {
     return (
         <>
 
-<div className="w-full max-w-4xl bg-background-light p-6 rounded-lg shadow-lg border border-primary/20">
+<div className="w-full max-w-4xl bg-background-light p-6 rounded-lg shadow-lg">
 <h2 className="text-xl font-semibold text-primary m-4">{factoryInfoData.factory_name} Information</h2>
 
     <div className="space-y-4">
