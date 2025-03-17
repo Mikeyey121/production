@@ -15,7 +15,7 @@ downtime_schedule = {d["date"]: d["expected_downtime_hours"] for d in factory_da
 product_constraints = {p["product_id"]: p for p in factory_data["product_constraints"]}
 
 # Generate production schedule
-def generate_production_schedule():
+def generate_production_schedule(max_daily_capacity, machine_efficinecy, available_shifts_per_day, hours_per_shift, downtime_schedule):
     production_schedule = []
     
     # Create a dictionary to store production needs per day
