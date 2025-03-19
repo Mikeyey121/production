@@ -34,12 +34,15 @@ def get_forecast():
 @app.route("/generate-production-schedule")
 def generate_production_schedule():
     max_daily_capacity = float(request.args.get("max_daily_capacity"))
-    machine_efficiency = float(request.args.get("machine_efficiency"))
+    machine_efficiency = float(request.args.get("machine_efficiency")) / 100
     available_shifts_per_day = request.args.get("available_shifts_per_day")
     hours_per_shift = request.args.get("hours_per_shift")
-    downtime_schedule = request.args.get("downtime_schedule")
+    # Parse the downtime_schedule string back into JSON
+    downtime_schedule = json.loads(request.args.get("downtime_schedule"))
     
-    
+    # Now create the dictionary from the parsed JSON
+    downtime_dict = {d["date"]: d["expected_downtime_hours"] for d in downtime_schedule}
+
     # Load JSON files
     with open("forecast.json", "r") as f:
         forecast_data = json.load(f)
@@ -47,9 +50,12 @@ def generate_production_schedule():
     with open("factory_info.json", "r") as f:
         factory_data = json.load(f)
 
+    # Use downtime_dict instead of downtime_schedule in the rest of your code
+    total_available_hours = factory_data["available_shifts_per_day"] * factory_data["hours_per_shift"]
+    total_produced = {product["product_id"]: 0 for product in forecast_data["products"]}
+
     # Extract factory constraints
     factory_capacity = max_daily_capacity * machine_efficiency
-    #downtime_schedule = {d["date"]: d["expected_downtime_hours"] for d in factory_data["downtime_schedule"]}
     product_constraints = {p["product_id"]: p for p in factory_data["product_constraints"]}
 
     production_schedule = []
@@ -78,7 +84,8 @@ def generate_production_schedule():
                 "product_id": product_id,
                 "product_name": product["product_name"],
                 "max_units": max_daily_units,
-                "priority": product_constraints[product_id]["priority_level"]
+                "priority": product_constraints[product_id]["priority_level"],
+                "remaining_units": total_units  # Track remaining production units
             })
             
             current_date += timedelta(days=1)
@@ -86,8 +93,8 @@ def generate_production_schedule():
     # Allocate daily production based on priority when multiple products overlap
     for date, products in daily_needs.items():
         # Adjust factory capacity for downtime
-        if date in downtime_schedule:
-            adjusted_capacity = factory_capacity 
+        if date in downtime_dict:
+            adjusted_capacity = factory_capacity * ((total_available_hours - downtime_dict[date]) / total_available_hours)
         else:
             adjusted_capacity = factory_capacity
         
@@ -96,15 +103,23 @@ def generate_production_schedule():
         
         remaining_capacity = adjusted_capacity
         for product in products:
-            daily_production = min(product["max_units"], remaining_capacity)
-            remaining_capacity -= daily_production
+            product_id = product["product_id"]
+            max_possible_production = min(product["max_units"], remaining_capacity)
+            remaining_forecast_units = forecast_data["products"][product_id - 1]["total_units"] - total_produced[product_id]
             
-            production_schedule.append({
-                "date": date,
-                "product_id": product["product_id"],
-                "product_name": product["product_name"],
-                "scheduled_units": round(daily_production)
-            })
+            # Ensure we do not exceed total forecasted units
+            daily_production = min(max_possible_production, remaining_forecast_units)
+            
+            if daily_production > 0:
+                total_produced[product_id] += daily_production
+                remaining_capacity -= daily_production
+                
+                production_schedule.append({
+                    "date": date,
+                    "product_id": product_id,
+                    "product_name": product["product_name"],
+                    "scheduled_units": round(daily_production)
+                })
     
     return production_schedule
         

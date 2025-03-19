@@ -67,6 +67,14 @@ export default function YearlyProduction() {
         return a.monthIndex - b.monthIndex;
     });
     
+    // Calculate totals for each product
+    const productTotals = productNames.reduce((acc, product) => {
+        acc[product] = monthlyData.reduce((sum, { products }) => {
+            return sum + (products[product] || 0);
+        }, 0);
+        return acc;
+    }, {} as Record<string, number>);
+
     return (
         <>
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -95,6 +103,15 @@ export default function YearlyProduction() {
                                 ))}
                             </tr>
                         ))}
+                        {/* Totals row */}
+                        <tr className="bg-gray-100 font-semibold border-b">
+                            <td className="py-3 px-4">Total</td>
+                            {productNames.map(product => (
+                                <td key={`total-${product}`} className="py-3 px-4 border-b">
+                                    {productTotals[product].toLocaleString()}
+                                </td>
+                            ))}
+                        </tr>
                     </tbody>
                 </table>
             </div>

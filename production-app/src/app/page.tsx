@@ -16,14 +16,14 @@ export default function Home() {
           <div className="col-span-1">
             <ForecastData />
           </div>
-          <div className="col-span-3 grid grid-cols-3 gap-4">
+          <div className="col-span-3 grid grid-cols-3 gap-4 h-full">
             <div className="col-span-3 w-full">
               <FactoryInfoData/>
             </div>
             <div className="col-span-2 w-full">
               <YearlyProduction />
             </div>
-            <div className="col-span-1 w-full">
+            <div className="col-span-1 w-full h-full">
               <DailyProduction />
             </div>
           </div>

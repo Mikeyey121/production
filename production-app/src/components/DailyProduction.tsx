@@ -35,15 +35,20 @@ export default function DailyProduction() {
         };
     }, []);
 
-    const allDates = productionData.map((item: ProductionItem) => item.date);
+    // Get unique dates and sort them
+    const allDates = [...new Set(productionData.map((item: ProductionItem) => item.date))].sort();
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">Daily Production Schedule</h2>
 
-            <select onChange={(e) => setSelectedDate(e.target.value)} value={selectedDate}>
-                {allDates.map((date, index) => (
-                    <option key={date + index} value={date}>{date}</option>
+            <select 
+                className="w-full p-2 mb-4 border rounded"
+                onChange={(e) => setSelectedDate(e.target.value)} 
+                value={selectedDate}
+            >
+                {allDates.map((date) => (
+                    <option key={date} value={date}>{date}</option>
                 ))}
             </select>
 
