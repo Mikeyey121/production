@@ -17,17 +17,17 @@
       },
       {
         "product_id": 2,
-        "max_units_per_day": 10000,
+        "max_units_per_day": 12000,
         "priority_level": 3
       },
       {
         "product_id": 3,
-        "max_units_per_day": 18000,
+        "max_units_per_day": 12000,
         "priority_level": 1
       },
       {
         "product_id": 4,
-        "max_units_per_day": 9000,
+        "max_units_per_day": 12000,
         "priority_level": 4
       }
     ]
