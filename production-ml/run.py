@@ -13,13 +13,16 @@ with open("factory_info.json", "r") as f:
 total_available_hours = factory_data["available_shifts_per_day"] * factory_data["hours_per_shift"]
 factory_capacity = factory_data["max_daily_capacity"] * factory_data["machine_efficiency"]
 downtime_schedule = {d["date"]: d["expected_downtime_hours"] for d in factory_data["downtime_schedule"]}
+print(downtime_schedule)
 product_constraints = {p["product_id"]: p for p in factory_data["product_constraints"]}
 
 # Track total production per product
 total_produced = {product["product_id"]: 0 for product in forecast_data["products"]}
 
 # Generate production schedule
-def generate_production_schedule():
+def generate_production_schedule(max_daily_capacity, machine_efficinecy, available_shifts_per_day, hours_per_shift, downtime_schedule):
+    factory_capacity = max_daily_capacity * machine_efficinecy
+
     production_schedule = []
     
     # Create a dictionary to store production needs per day
@@ -86,7 +89,7 @@ def generate_production_schedule():
     return production_schedule
 
 # Generate schedule
-schedule = generate_production_schedule()
+schedule = generate_production_schedule(factory_data["max_daily_capacity"],factory_data["machine_efficiency"],3,8,downtime_schedule)
 
 # Convert to DataFrame and save as CSV
 schedule_df = pd.DataFrame(schedule)

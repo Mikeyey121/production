@@ -13,8 +13,7 @@ export default function DailyProduction() {
     const [productionData, setProductionData] = useState<ProductionItem[]>([]);
     const [selectedDate, setSelectedDate] = useState<string>("2025/06/01");
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const fetchData = async () => {
             try {
                 const response = await fetch('/api/yearly');
                 const data = await response.json();
@@ -24,8 +23,17 @@ export default function DailyProduction() {
             }
         };
         
+
+    useEffect(() => {
         fetchData();
-    }, []); 
+
+        // Listen for the custom event
+        window.addEventListener('productionUpdated', fetchData);
+        
+        return () => {
+            window.removeEventListener('productionUpdated', fetchData);
+        };
+    }, []);
 
     const allDates = productionData.map((item: ProductionItem) => item.date);
 

@@ -33,6 +33,13 @@ def get_forecast():
 
 @app.route("/generate-production-schedule")
 def generate_production_schedule():
+    max_daily_capacity = float(request.args.get("max_daily_capacity"))
+    machine_efficiency = float(request.args.get("machine_efficiency"))
+    available_shifts_per_day = request.args.get("available_shifts_per_day")
+    hours_per_shift = request.args.get("hours_per_shift")
+    downtime_schedule = request.args.get("downtime_schedule")
+    
+    
     # Load JSON files
     with open("forecast.json", "r") as f:
         forecast_data = json.load(f)
@@ -41,8 +48,8 @@ def generate_production_schedule():
         factory_data = json.load(f)
 
     # Extract factory constraints
-    factory_capacity = factory_data["max_daily_capacity"] * factory_data["machine_efficiency"]
-    downtime_schedule = {d["date"]: d["expected_downtime_hours"] for d in factory_data["downtime_schedule"]}
+    factory_capacity = max_daily_capacity * machine_efficiency
+    #downtime_schedule = {d["date"]: d["expected_downtime_hours"] for d in factory_data["downtime_schedule"]}
     product_constraints = {p["product_id"]: p for p in factory_data["product_constraints"]}
 
     production_schedule = []
@@ -80,7 +87,7 @@ def generate_production_schedule():
     for date, products in daily_needs.items():
         # Adjust factory capacity for downtime
         if date in downtime_schedule:
-            adjusted_capacity = factory_capacity * ((24 - downtime_schedule[date]) / 24)
+            adjusted_capacity = factory_capacity 
         else:
             adjusted_capacity = factory_capacity
         
